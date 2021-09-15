@@ -36,6 +36,7 @@ int main(int argc, char **argv)
       // 1. Buscar en lista estados, algun proceso "READY"
       // Si hay un proceso "READY", 
           //pasarlo a "RUNNING", ejecutar la funcion CPU
+          // llevar estadistica
 
 
     // 2. Contadores (for de la lista estados) y estadistica
