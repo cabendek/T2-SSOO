@@ -47,5 +47,3 @@ void finalizar_proceso(Process* proceso, int seccion_inicial, Queue* cola_final,
 void destroy_proceso(Process* proceso);
 void destroy_queue(Queue* cola);
 void destroy_queue_secciones(Queue_secciones* cola);
-void destruir(Queue* lista);
-int sup_inicio (Queue * lista);

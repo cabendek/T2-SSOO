@@ -135,25 +135,6 @@ void destroy_queue_secciones(Queue_secciones* cola){
   free(cola);
 }
 
-void destruir (Queue *lista){
-  while (lista->largo > 0)
-    sup_inicio (lista);
-}
-
-int sup_inicio (Queue * lista){
-  if (lista->largo == 0)
-    return -1;
-  Process* sup_elemento;
-  sup_elemento = lista->primer_proceso;
-  lista->primer_proceso = lista->primer_proceso->siguiente;
-  if (lista->largo == 1)
-    lista->ultimo_proceso = NULL;
-  free (sup_elemento->nombre);
-  free (sup_elemento);
-  lista->largo--;
-  return 0;
-}
-
 // int quantum(int Q, int fabrica, Queue* queue){
 //     Process* process;
 //     int ni = 0;
