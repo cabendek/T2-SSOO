@@ -1,7 +1,7 @@
 #include "entidades.h"
 
 int pid = 0;
-Process* process_init(char* nombre, int fabrica, int tiempo_llegada, int* burst){
+Process* process_init(char* nombre, int fabrica, int tiempo_llegada, int* array_burst){
     Process* process = malloc(sizeof(Process));
     
     *process = (Process) {
@@ -11,7 +11,7 @@ Process* process_init(char* nombre, int fabrica, int tiempo_llegada, int* burst)
         .id_fabrica = fabrica,
         .tiempo_llegada = tiempo_llegada,
         .section = 0, //Seccion 0: no esta en nada; Seccion 1: "READY" desde "WAITING"; Seccion 2: "READY" desde "RUNNING"; Seccion 3: "READY" por 1era vez; Seccion 4: "WAITING"
-        .array_burst = burst,
+        .array_burst = array_burst,
         .number_burst = 0,
         .quantum = 0,
         .A = 0,
@@ -46,8 +46,8 @@ Queue_secciones* queue_secciones_init(){
 void insertar_proceso(Process* proceso, Queue* cola){
   // si es el primer elemento
   if (cola->largo == 0){
-    cola->primer_proceso == proceso;
-    cola->ultimo_proceso == proceso;
+    cola->primer_proceso = proceso;
+    cola->ultimo_proceso = proceso;
     cola->largo = 1;
   } else{
   // si no es el primer elemento
@@ -64,6 +64,7 @@ void quitar_proceso(Process* proceso, Queue* cola){
     Process* proceso_siguiente = cola->primer_proceso->siguiente;
     cola->primer_proceso = proceso_siguiente;
     cola->largo =- 1;
+
   } else if (cola->ultimo_proceso == proceso){
   // si es el proceso final
     // iterar cola hasta encontrar el pen ultimo y asignarle a su siguiente NULL
@@ -72,7 +73,9 @@ void quitar_proceso(Process* proceso, Queue* cola){
       proceso_iterado = proceso_iterado->siguiente;
     }
     proceso_iterado->siguiente = NULL;
+    cola->ultimo_proceso = proceso_iterado;
     cola->largo =- 1;
+
   } else {
   // si es otro proceso
     int pid = proceso->pid;
@@ -83,6 +86,10 @@ void quitar_proceso(Process* proceso, Queue* cola){
     Process* siguiente = proceso_iterado->siguiente->siguiente;
     proceso_iterado->siguiente = siguiente;
     cola->largo =- 1;
+  }
+  if (cola->largo == 0){
+    cola->primer_proceso = NULL;
+    cola->ultimo_proceso = NULL;
   }
 }
 
@@ -110,19 +117,41 @@ void destroy_proceso(Process* proceso){
   if (proceso->siguiente != NULL){
     destroy_proceso(proceso->siguiente);
   } else{
-    free(proceso->siguiente);
+    // free(proceso->array_burst);
     free(proceso);
   }
 }
 
 void destroy_queue(Queue* cola){
-  destroy_proceso(cola->primer_proceso);
+  if (cola->primer_proceso != NULL){
+    destroy_proceso(cola->primer_proceso);
+  }
+  free(cola->primer_proceso);
   free(cola);
 }
 
 void destroy_queue_secciones(Queue_secciones* cola){
   free(cola->seccion);
   free(cola);
+}
+
+void destruir (Queue *lista){
+  while (lista->largo > 0)
+    sup_inicio (lista);
+}
+
+int sup_inicio (Queue * lista){
+  if (lista->largo == 0)
+    return -1;
+  Process* sup_elemento;
+  sup_elemento = lista->primer_proceso;
+  lista->primer_proceso = lista->primer_proceso->siguiente;
+  if (lista->largo == 1)
+    lista->ultimo_proceso = NULL;
+  free (sup_elemento->nombre);
+  free (sup_elemento);
+  lista->largo--;
+  return 0;
 }
 
 // int quantum(int Q, int fabrica, Queue* queue){

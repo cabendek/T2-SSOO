@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "entidades.h"
 #include "../file_manager/manager.h"
 
@@ -15,7 +16,7 @@ int main(int argc, char **argv)
   Queue* cola_seccion3 = queue_init();
   Queue* cola_seccion4 = queue_init();
   Queue* cola_final = queue_init();
-  Queue_secciones* cola_secciones = queue_estados_init(cola_seccion1, cola_seccion2, cola_seccion3, cola_seccion4);
+  Queue_secciones* cola_secciones = queue_secciones_init(cola_seccion1, cola_seccion2, cola_seccion3, cola_seccion4);
 
   printf("Reading file of length %i:\n", file->len);
   for (int i = 0; i < file->len; i++)
@@ -24,14 +25,19 @@ int main(int argc, char **argv)
     printf(
         "\tProcess %s from factory %s has init time of %s and %s bursts.\n",
         line[0], line[2], line[1], line[3]);
-        Process* proceso = process_init(line[0], line[2], line[1], line[3]);
-        
+        int array_burst[atoi(line[3])];
+        for (int i=0; i< atoi(line[3]); i++){
+          array_burst[i]= atoi(line[3+i]);
+        }
+        Process* proceso = process_init(line[0], atoi(line[1]), atoi(line[2]), array_burst);
         if (proceso->tiempo_llegada == 0){
           insertar_proceso(proceso, cola_seccion3);
         } else {
           insertar_proceso(proceso, cola_inicial);
         }
   }
+  printf("Liberando memoria...\n");
+  input_file_destroy(file);
 
   // Instanciar Plani <3
   // Armar fila secciones, con las secciones respectivas (TAMI)
@@ -71,6 +77,7 @@ int main(int argc, char **argv)
   // Escribir el Output
 
   // Liberar la memoria
+  
   destroy_queue(cola_inicial);
   destroy_queue(cola_seccion1);
   destroy_queue(cola_seccion2);
