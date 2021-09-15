@@ -15,9 +15,14 @@ typedef struct proceso{
     Estado estado;
     int id_fabrica;
     int tiempo_llegada;
-    int cant_rafagas;
+    int* array_burst;
+    int number_burst;
+    int section;
+    int quantum;
+    int A;
+    int B;
+    int actual_burst;
     struct proceso* siguiente;
-    int* burst;
 } Process;
 
 typedef struct queque{
@@ -27,4 +32,5 @@ typedef struct queque{
 } Queue;
 
 
-Process* process_init(int pid, char* nombre, int fabrica, int tiempo_llegada, int* burst);
+Process* process_init(int pid, char* nombre, int fabrica, int tiempo_llegada, int* burst, int number_burst);
+Queue* queue_init();

@@ -2,11 +2,15 @@
 #include "entidades.h"
 #include "../file_manager/manager.h"
 
+
 int main(int argc, char **argv)
 {
   printf("Hello T2!\n");
 
   InputFile *file = read_file("input.txt");
+  
+  Queue* final_queue = queque_init();
+  int total_length = file->len;
 
   printf("Reading file of length %i:\n", file->len);
   for (int i = 0; i < file->len; i++)
@@ -15,43 +19,44 @@ int main(int argc, char **argv)
     printf(
         "\tProcess %s from factory %s has init time of %s and %s bursts.\n",
         line[0], line[2], line[1], line[3]);
+        // Poblar array de procesos iniciales
+        // armar por id
+        // Si tiempo de llegada = 0, mandar a otro array, cambiar el atributo section => 3
   }
-  Process* process = process_init(0,"nombre",1,2,[A,B,A,B,A]);
+  // Instanciar Plani <3
+  // Armar fila estados, con las secciones respectivas (TAMI)
 
-  // Armar función que cambie el estado del proceso
-  if (Ai == tiempo_que_lleva){
-    //Cede la CPU
-    process->estado = WAITING;
-  } else if (Termina la ejecucion){
-    process->estado = FINISHED;
-  } else if (quantum_restante == 0){
-    process->estado = READY;
-  } else {
-    //Sigo en running
+  int time = 0;
+  while (final_queue->length == total_length){
+    // Checkear si hay un proceso en running (si hay)
+      // 1. Se ejecuta la funcion CPU
+      // --- Se descuenta 1 a A y a quantum
+      
+    // Si no hay proceso RUNNING
+      // 1. Buscar en lista estados, algun proceso "READY"
+      // Si hay un proceso "READY", 
+          //pasarlo a "RUNNING", ejecutar la funcion CPU
+
+
+    // 2. Contadores (for de la lista estados) y estadistica
+      // --- "RUNNING"
+        // --- Checkear nuevos estados
+        // --- Si A o quantum = 0, hago blabla
+        // --- cachar si pasa a ready (seccion 2) o waiting o finished (no quede un B; igualdad rafagas)
+      
+      // --- "READY"
+        // nada
+      
+      // --- "WAITING"
+        // --- Se descuenta 1 a B y chequear nuevo estado 
+        // --- Si B es 0 pasa a "READY" Section 1
+
+
+    //
+    time += 1;
+    // Agregar desde fila_inical a fila_estado que cumplan ocn que tiempo_llegada = tiempo
   }
 
-  switch (process->estado) //Switch te permite realizar diferentes acciones según el caso del estado
-  {
-  case RUNNING:
-    printf("Estoy en estado RUNNING\n");
-    break;
-  
-  case READY:
-    printf("Estoy en estado READY\n");
-    printf("Lo mando al final de la cola\n");
-    break;
-  
-  case WAITING:
-    printf("Estoy en estado WAITING\n");
-    printf("Lo mando al final de la cola\n");
-    break;
-  
-  case FINISHED:
-    printf("Estoy en estado FINISHED\n");
-    break;
 
-  default:
-  printf("Esto no debería pasar\n");
-    break;
-  }
+
 }
