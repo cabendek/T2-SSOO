@@ -27,3 +27,4 @@ typedef struct queque{
 } Queue;
 
 
+Process* process_init(int pid, char* nombre, int fabrica, int tiempo_llegada, int* burst);
