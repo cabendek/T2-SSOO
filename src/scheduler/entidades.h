@@ -44,5 +44,6 @@ void quitar_proceso(Process* proceso, Queue* cola);
 void inicializar_proceso(Process* proceso, Queue* cola_inicial, Queue_secciones* cola_secciones);
 void cambiar_seccion(Process* proceso, int seccion_inicial, int seccion_final, Queue_secciones* cola_secciones);
 void finalizar_proceso(Process* proceso, int seccion_inicial, Queue* cola_final, Queue_secciones* cola_secciones);
+void destroy_proceso(Process* proceso);
 void destroy_queue(Queue* cola);
 void destroy_queue_secciones(Queue_secciones* cola);

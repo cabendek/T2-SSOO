@@ -106,8 +106,17 @@ void finalizar_proceso(Process* proceso, int seccion_inicial, Queue* cola_final,
   insertar_proceso(proceso, cola_final);
 }
 
+void destroy_proceso(Process* proceso){
+  if (proceso->siguiente != NULL){
+    destroy_proceso(proceso->siguiente);
+  } else{
+    free(proceso->siguiente);
+    free(proceso);
+  }
+}
+
 void destroy_queue(Queue* cola){
-  // destruir puestos
+  destroy_proceso(cola->primer_proceso);
   free(cola);
 }
 
