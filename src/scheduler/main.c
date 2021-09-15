@@ -25,9 +25,12 @@ int main(int argc, char **argv)
         "\tProcess %s from factory %s has init time of %s and %s bursts.\n",
         line[0], line[2], line[1], line[3]);
         Process* proceso = process_init(line[0], line[2], line[1], line[3]);
-        // Poblar array de procesos iniciales
-        // armar por id
-        // Si tiempo de llegada = 0, mandar a otro array, cambiar el atributo section => 3
+        
+        if (proceso->tiempo_llegada == 0){
+          insertar_proceso(proceso, cola_seccion3);
+        } else {
+          insertar_proceso(proceso, cola_inicial);
+        }
   }
 
   // Instanciar Plani <3
