@@ -25,12 +25,24 @@ typedef struct proceso{
     struct proceso* siguiente;
 } Process;
 
-typedef struct queque{
-    int length;
-    struct proceso* primero;
-    struct proceso* ultimo;
+typedef struct queue{
+    int largo;
+    Process* primer_proceso;
+    Process* ultimo_proceso;
 } Queue;
 
+typedef struct queue_secciones{
+    Queue** seccion;
+} Queue_secciones;
 
-Process* process_init(int pid, char* nombre, int fabrica, int tiempo_llegada, int* burst, int number_burst);
+Process* process_init(char* nombre, int fabrica, int tiempo_llegada, int* burst);
 Queue* queue_init();
+Queue_secciones* queue_secciones_init();
+
+void insertar_proceso(Process* proceso, Queue* cola);
+void quitar_proceso(Process* proceso, Queue* cola);
+void inicializar_proceso(Process* proceso, Queue* cola_inicial, Queue_secciones* cola_secciones);
+void cambiar_seccion(Process* proceso, int seccion_inicial, int seccion_final, Queue_secciones* cola_secciones);
+void finalizar_proceso(Process* proceso, int seccion_inicial, Queue* cola_final, Queue_secciones* cola_secciones);
+void destroy_queue(Queue* cola);
+void destroy_queue_secciones(Queue_secciones* cola);
