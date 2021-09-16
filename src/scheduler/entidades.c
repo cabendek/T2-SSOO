@@ -1,4 +1,5 @@
 #include "entidades.h"
+#include <string.h>
 
 int pid = 0;
 Process* process_init(char* nombre, int fabrica, int tiempo_llegada, int* array_burst, int number_burst){
@@ -115,6 +116,35 @@ void finalizar_proceso(Process* proceso, int seccion_inicial, Queue* cola_final,
   insertar_proceso(proceso, cola_final);
 }
 
+Process* buscar_proceso_running(Queue_secciones* cola_secciones){
+  for (int i=0; i<3; i++){
+    if (cola_secciones->seccion[i]->largo > 0){
+      return cola_secciones->seccion[i]->primer_proceso;
+    }
+  }
+  return NULL;
+}
+
+Process* prioridad(Process* process_1, Process* process_2){
+  if (process_1->id_fabrica == process_2->id_fabrica){
+    int result = strcmp(process_1->nombre,process_2->nombre);
+    if (result > 0) {
+      // Process 2 es mas chico
+      return process_2;
+    
+    } else {
+      // Process 1 es mas chico
+      return process_1;
+    }
+  } else{
+    if (process_1->id_fabrica < process_2->id_fabrica){
+      return process_1;
+    } else {
+      return process_2;
+    }
+  }
+}
+
 void destroy_proceso(Process* proceso){
   if (proceso->siguiente != NULL){
     destroy_proceso(proceso->siguiente);
@@ -137,6 +167,22 @@ void destroy_queue_secciones(Queue_secciones* cola){
 }
 
 // int quantum(int Q, int fabrica, Queue* queue){
+  
+  // int fabricas_1[]= {0,0,0,0};
+  //   int fabricas_2[]= {0,0,0,0};
+
+  //   for (int j=0;j<4;j++){
+  //     Process* actual = cola_secciones->seccion[j]->primer_proceso;
+  //     while (actual != NULL)
+  //     {
+  //       if (actual->id_fabrica == process_1->id_fabrica)
+  //       {
+  //         /* code */
+  //       }
+  //     }
+  //   }
+
+
 //     Process* process;
 //     int ni = 0;
 //     int fabricas[] = {0,0,0,0};
