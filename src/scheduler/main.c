@@ -78,15 +78,16 @@ for (int t = 0; t < 6; t++){
     if (process_running){
 
       if (running_process->A == 0 && running_process->number_burst != (running_process->actual_burst+2)/2) {
-  //       // RUNNING -> WAITING
-  //       running_process->estado = WAITING;
-  //       running_process->actual_burst += 1;
-  //       running_process->B = running_process->array_burst[running_process->actual_burst];
-  //       printf("SECCION: %i\n",running_process->section);
-  //       cambiar_seccion(running_process, running_process->section, 4, cola_secciones, time);
-  //       if (running_process->quantum == 0){
-  //         //running_process.interrupciones += 1; ESTADISTICAS
-  //       }
+        // RUNNING -> WAITING
+        running_process->estado = WAITING;
+        running_process->actual_burst += 1;
+        //running_process->B = running_process->array_burst[running_process->actual_burst];
+        printf("B: %i\n",running_process->B);
+        printf("Actual Burst: %i\n",running_process->actual_burst);
+        cambiar_seccion(running_process, running_process->section, 4, cola_secciones, time);
+        if (running_process->quantum == 0){
+          //running_process.interrupciones += 1; ESTADISTICAS
+        }
   //       // Buscar cual entra --------------- FUNCION -----------------
   //       // READY -> RUNNING
   //       Process* new_running = buscar_proceso_running(cola_secciones);
@@ -120,15 +121,16 @@ for (int t = 0; t < 6; t++){
         cambiar_seccion(running_process,running_process->section, 2, cola_secciones, time);
         // //Buscar cual entra --------------- FUNCION -----------------
         // // READY -> RUNNING
-        // Process* new_running = buscar_proceso_running(cola_secciones);
-        // printf("El proceso %s pasa a WAITING\n", running_process->nombre);
-        // if (new_running != NULL){
-        //   printf("[t = %i] La CPU eligió el proceso %i.\n", time, new_running->pid);
-        //   int q = quantum(Q,new_running->id_fabrica,cola_secciones);
-        //   new_running->quantum = q;
-        //   new_running->A -= 1;
-        //   new_running->quantum -= 1;
-        // }
+        Process* new_running = buscar_proceso_running(cola_secciones);
+        printf("El proceso %s pasa a RUNNING\n", running_process->nombre);
+        if (new_running != NULL){
+          printf("[t = %i] La CPU eligió el proceso %i.\n", time, new_running->pid);
+          int q = quantum(Q,new_running->id_fabrica,cola_secciones);
+          new_running->estado = RUNNING;
+          new_running->quantum = q;
+          new_running->A -= 1;
+          new_running->quantum -= 1;
+        }
         
       } else {
   //       // RUNNING -> RUNNING
@@ -224,6 +226,7 @@ for (int t = 0; t < 6; t++){
 
   time += 1;
   }
+  printf("\tTERMINEEE\n");
   input_file_destroy(file);
   destroy_queue(cola_inicial);
   destroy_queue(cola_seccion1);
