@@ -2,7 +2,7 @@
 #include <string.h>
 
 int pid = 0;
-Process* process_init(char* nombre, int fabrica, int tiempo_llegada, int* array_burst, int number_burst){
+Process* process_init(char* nombre, int fabrica, int tiempo_llegada, int number_burst){
     
     Process* process = malloc(sizeof(Process));
     
@@ -13,11 +13,11 @@ Process* process_init(char* nombre, int fabrica, int tiempo_llegada, int* array_
         .id_fabrica = fabrica,
         .tiempo_llegada = tiempo_llegada,
         .section = 0, //Seccion 0: no esta en nada; Seccion 1: "READY" desde "WAITING"; Seccion 2: "READY" desde "RUNNING"; Seccion 3: "READY" por 1era vez; Seccion 4: "WAITING"
-        .array_burst = array_burst,
+        .array_burst = calloc(number_burst*2-1, sizeof(int)),
         .number_burst = number_burst,
         .quantum = 0,
-        .A = array_burst[0],
-        .B = array_burst[1],
+        // .A = array_burst[0],
+        // .B = array_burst[1],
         .actual_burst = 0,
         .siguiente = NULL
   };
@@ -170,6 +170,7 @@ void destroy_proceso(Process* proceso){
   if (proceso->siguiente != NULL){
     destroy_proceso(proceso->siguiente);
   } else{
+    free(proceso->array_burst);
     free(proceso);
   }
 }

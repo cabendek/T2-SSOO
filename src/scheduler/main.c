@@ -34,14 +34,19 @@ int main(int argc, char **argv)
     // printf(
     //     "\tProcess %s from factory %s has init time of %s and %s bursts.\n",
     //     line[0], line[2], line[1], line[3]);
-        int largo_array = atoi(line[3])*2-1;
-        int array_burst[largo_array];
-        for (int i=0; i< largo_array; i++){
-          array_burst[i]= atoi(line[4+i]);
+        // int largo_array = atoi(line[3])*2-1;
+        // int array_burst[largo_array];
+        // for (int i=0; i< largo_array; i++){
+        //   int valor = atoi(line[4+i]);
+        //   array_burst[i]= valor;
           // printf("Array_burst[%i] = %i\n", i, array_burst[i]);
-        }
+        // }
         char* nombre = line[0];
-        Process* proceso = process_init(nombre, atoi(line[2]), atoi(line[1]), array_burst, atoi(line[3]));
+        Process* proceso = process_init(nombre, atoi(line[2]), atoi(line[1]), atoi(line[3]));
+        int largo_array = atoi(line[3])*2-1;
+        for (int i=0; i< largo_array; i++){
+          proceso->array_burst[i]=atoi(line[3+i+1]);
+        }
         // printf("[Dentro For]ARRAY_BURST:%i, %i, %i, %i\n", proceso->array_burst[0], proceso->array_burst[1], proceso->array_burst[2], proceso->array_burst[3]);
         if (proceso->tiempo_llegada == 0){
           printf("[t = 0] El proceso %s ha sido creado y ha pasado a estado READY.\n", proceso->nombre);
