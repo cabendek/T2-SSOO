@@ -36,12 +36,16 @@ Queue* queue_init(){
   return queue;
 };
 
-Queue_secciones* queue_secciones_init(){
+Queue_secciones* queue_secciones_init(Queue* cola_seccion1,Queue* cola_seccion2, Queue* cola_seccion3,Queue* cola_seccion4){
   Queue_secciones* cola_secciones = malloc(sizeof(Queue_secciones));
   
   *cola_secciones = (Queue_secciones){
     .seccion = calloc(4, sizeof(Queue**))
   };
+  cola_secciones->seccion[0] = cola_seccion1;
+  cola_secciones->seccion[1] = cola_seccion2;
+  cola_secciones->seccion[2] = cola_seccion3;
+  cola_secciones->seccion[3] = cola_seccion4;
   return cola_secciones;
 }
 
@@ -95,25 +99,29 @@ void quitar_proceso(Process* proceso, Queue* cola){
   }
 }
 
-void inicializar_proceso(Process* proceso, Queue* cola_inicial, Queue_secciones* cola_secciones){
+void inicializar_proceso(Process* proceso, Queue* cola_inicial, Queue_secciones* cola_secciones,int time){
   // la cola final siempre es la seccion 3 (que en el arreglo es 2)
   Queue* cola_final = cola_secciones->seccion[2];
   quitar_proceso(proceso, cola_inicial);
   insertar_proceso(proceso, cola_final);
+  proceso->section = 3;
+  printf("[t = %i] El proceso %s ha pasado a estado READY.\n",time, proceso->nombre);
 }
 
-void cambiar_seccion(Process* proceso, int seccion_inicial, int seccion_final, Queue_secciones* cola_secciones){
+void cambiar_seccion(Process* proceso, int seccion_inicial, int seccion_final, Queue_secciones* cola_secciones,int time){
   Queue* cola_inicial = cola_secciones->seccion[seccion_inicial - 1];
   Queue* cola_final = cola_secciones->seccion[seccion_final - 1];
   proceso->section = seccion_final;
   quitar_proceso(proceso, cola_inicial);
   insertar_proceso(proceso, cola_final);
+  printf("[t = %i] El proceso %s ha pasado a estado %i.\n",time, proceso->nombre, seccion_final);
 }
 
-void finalizar_proceso(Process* proceso, int seccion_inicial, Queue* cola_final, Queue_secciones* cola_secciones){
+void finalizar_proceso(Process* proceso, int seccion_inicial, Queue* cola_final, Queue_secciones* cola_secciones, int time){
   Queue* cola_inicial = cola_secciones->seccion[seccion_inicial - 1];
   quitar_proceso(proceso, cola_inicial);
   insertar_proceso(proceso, cola_final);
+  printf("[t = %i] El proceso %s ha pasado a estado FINISHED.\n",time, proceso->nombre);
 }
 
 Process* buscar_proceso_running(Queue_secciones* cola_secciones){

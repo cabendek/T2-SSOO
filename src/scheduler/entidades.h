@@ -40,13 +40,13 @@ Process* buscar_proceso_running(Queue_secciones* cola_secciones);
 int prioridad(Process* process_1, Process* process_2);
 int quantum(int Q, int fabrica, Queue_secciones* cola_secciones);
 Queue* queue_init();
-Queue_secciones* queue_secciones_init();
+Queue_secciones* queue_secciones_init(Queue* cola_seccion1,Queue* cola_seccion2,Queue* cola_seccion3,Queue* cola_seccion4);
 
 void insertar_proceso(Process* proceso, Queue* cola);
 void quitar_proceso(Process* proceso, Queue* cola);
-void inicializar_proceso(Process* proceso, Queue* cola_inicial, Queue_secciones* cola_secciones);
-void cambiar_seccion(Process* proceso, int seccion_inicial, int seccion_final, Queue_secciones* cola_secciones);
-void finalizar_proceso(Process* proceso, int seccion_inicial, Queue* cola_final, Queue_secciones* cola_secciones);
+void inicializar_proceso(Process* proceso, Queue* cola_inicial, Queue_secciones* cola_secciones,int time);
+void cambiar_seccion(Process* proceso, int seccion_inicial, int seccion_final, Queue_secciones* cola_secciones, int time);
+void finalizar_proceso(Process* proceso, int seccion_inicial, Queue* cola_final, Queue_secciones* cola_secciones, int time);
 void destroy_proceso(Process* proceso);
 void destroy_queue(Queue* cola);
 void destroy_queue_secciones(Queue_secciones* cola);
