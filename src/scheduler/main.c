@@ -13,6 +13,7 @@
 
 int main(int argc, char **argv)
 {
+  int Q = 100;
   printf("Hello T2!\n");
 
   // inicializamos las variables leyendo el archivo
@@ -68,10 +69,7 @@ int main(int argc, char **argv)
       }
     }
     
-    if (process_running){ // o if (running_process->estado == RUNNING){
-      // --- Se descuenta 1 a A y a quantum
-      running_process->A -= 1;
-      running_process->quantum -= 1;
+    if (process_running){
 
       if (running_process->A == 0 && running_process->number_burst != (running_process->actual_burst+2)/2) {
         // RUNNING -> WAITING
@@ -80,12 +78,14 @@ int main(int argc, char **argv)
         running_process->B = running_process->array_burst[running_process->actual_burst];
         cambiar_seccion(running_process, running_process->section, 4, cola_secciones);
         if (running_process->quantum == 0){
-          //running_process.interrupciones += 1;
+          //running_process.interrupciones += 1; ESTADISTICAS
         }
         // Buscar cual entra --------------- FUNCION -----------------
         // READY -> RUNNING
         Process* new_running = buscar_proceso_running(cola_secciones);
         if (new_running != NULL){
+          int q = quantum(Q,new_running->id_fabrica,cola_secciones);
+          new_running->quantum = q;
           new_running->A -= 1;
           new_running->quantum -= 1;
         }
@@ -98,6 +98,8 @@ int main(int argc, char **argv)
         // READY -> RUNNING
         Process* new_running = buscar_proceso_running(cola_secciones);
         if (new_running != NULL){
+          int q = quantum(Q,new_running->id_fabrica,cola_secciones);
+          new_running->quantum = q;
           new_running->A -= 1;
           new_running->quantum -= 1;
         }
@@ -110,16 +112,16 @@ int main(int argc, char **argv)
         // READY -> RUNNING
         Process* new_running = buscar_proceso_running(cola_secciones);
         if (new_running != NULL){
+          int q = quantum(Q,new_running->id_fabrica,cola_secciones);
+          new_running->quantum = q;
           new_running->A -= 1;
           new_running->quantum -= 1;
         }
         
       } else {
         // RUNNING -> RUNNING
-        // NOSE SI HAY QUE RESTARLOS ACA O ARRIBA
-
-        // running_process->A -= 1;
-        // running_process->quantum -= 1;
+        running_process->A -= 1;
+        running_process->quantum -= 1;
       }
     
     // Si no hay procesos en estado RUNNING
@@ -128,42 +130,30 @@ int main(int argc, char **argv)
       for (int i=0; i<3;i++){
         if (cola_secciones->seccion[i]->largo > 0 ){
           running_process = cola_secciones->seccion[i]->primer_proceso;
+          running_process->estado = RUNNING;
+          int q = quantum(Q,running_process->id_fabrica,cola_secciones);
+          running_process->quantum = q;
+          running_process->A -= 1;
+          running_process->quantum -= 1;
           break;
         }
       }
-      running_process->estado = RUNNING;
-      running_process->A -= 1;
-      running_process->quantum -= 1;
-
     }
 
     // Descontar B de procesos waiting
     Process* proceso_waiting = cola_seccion4->primer_proceso;
 
-    if (cola_seccion4->largo == 1){
+    while (proceso_waiting != NULL){
       proceso_waiting->B -= 1;
-      
+
       if (proceso_waiting->B == 0){
         // WAITING -> READY
         cambiar_seccion(proceso_waiting, 4, 1, cola_secciones);
         proceso_waiting->actual_burst += 1;
         proceso_waiting->A = proceso_waiting->array_burst[proceso_waiting->actual_burst];
       }
-    
-    } else {
-      while (proceso_waiting->siguiente != NULL){
-        proceso_waiting->B -= 1;
-
-        if (proceso_waiting->B == 0){
-          // WAITING -> READY
-          cambiar_seccion(proceso_waiting, 4, 1, cola_secciones);
-          proceso_waiting->actual_burst += 1;
-          proceso_waiting->A = proceso_waiting->array_burst[proceso_waiting->actual_burst];
-        }
-        
-        proceso_waiting = proceso_waiting->siguiente;
-      }
-      proceso_waiting->B -= 1; 
+      
+      proceso_waiting = proceso_waiting->siguiente;
     }
     
 
@@ -174,19 +164,39 @@ int main(int argc, char **argv)
       }
     
     } else {
-      int cuantos_entran = 0;  
+      Process* process_1 = NULL;
+      Process* process_2 = NULL;
       Process* proceso_sin_iniciar = cola_inicial->primer_proceso;
-      while(proceso_sin_iniciar->siguiente != NULL){
+
+      while(proceso_sin_iniciar != NULL){
         if (proceso_sin_iniciar->tiempo_llegada == time){
-          cuantos_entran += 1;
-          //Guardar su puntero (TAMI)
+          
+          if (process_1 == NULL){
+            process_1 = proceso_sin_iniciar;
+
+          } else if (process_2 == NULL){
+            process_2 = proceso_sin_iniciar;
+
+          } else {
+            printf("Esto no deberia pasar");
+          }
         }
+        proceso_sin_iniciar = proceso_sin_iniciar->siguiente;
       }
-      if (cuantos_entran == 1){
-        insertar_proceso(puntero, cola_seccion3);
-      } else if (cuantos_entran > 1){
-        prioridad(puntero_1, puntero_2);
-      } else {}
+      if (process_2 == NULL && process_1 != NULL){
+        inicializar_proceso(process_1, cola_inicial, cola_secciones);
+      } else if (process_2 != NULL && process_1 != NULL){
+        int ingreso = prioridad(process_1, process_2);
+        if (ingreso == 0){
+          inicializar_proceso(process_1, cola_inicial, cola_secciones);
+          inicializar_proceso(process_2, cola_inicial, cola_secciones);
+        } else{
+          inicializar_proceso(process_2, cola_inicial, cola_secciones);
+          inicializar_proceso(process_1, cola_inicial, cola_secciones);
+        }
+      } else {
+        // No se incorpora ningun proceso
+      }
     }
 
   time += 1;

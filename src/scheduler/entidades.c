@@ -65,7 +65,7 @@ void quitar_proceso(Process* proceso, Queue* cola){
   if (cola->primer_proceso == proceso){
     Process* proceso_siguiente = cola->primer_proceso->siguiente;
     cola->primer_proceso = proceso_siguiente;
-    cola->largo =- 1;
+    cola->largo -= 1;
 
   } else if (cola->ultimo_proceso == proceso){
   // si es el proceso final
@@ -76,7 +76,7 @@ void quitar_proceso(Process* proceso, Queue* cola){
     }
     proceso_iterado->siguiente = NULL;
     cola->ultimo_proceso = proceso_iterado;
-    cola->largo =- 1;
+    cola->largo -= 1;
 
   } else {
   // si es otro proceso
@@ -87,7 +87,7 @@ void quitar_proceso(Process* proceso, Queue* cola){
     }
     Process* siguiente = proceso_iterado->siguiente->siguiente;
     proceso_iterado->siguiente = siguiente;
-    cola->largo =- 1;
+    cola->largo -= 1;
   }
   if (cola->largo == 0){
     cola->primer_proceso = NULL;
@@ -119,28 +119,29 @@ void finalizar_proceso(Process* proceso, int seccion_inicial, Queue* cola_final,
 Process* buscar_proceso_running(Queue_secciones* cola_secciones){
   for (int i=0; i<3; i++){
     if (cola_secciones->seccion[i]->largo > 0){
+      cola_secciones->seccion[i]->primer_proceso->estado = RUNNING;
       return cola_secciones->seccion[i]->primer_proceso;
     }
   }
   return NULL;
 }
 
-Process* prioridad(Process* process_1, Process* process_2){
+int prioridad(Process* process_1, Process* process_2){
   if (process_1->id_fabrica == process_2->id_fabrica){
-    int result = strcmp(process_1->nombre,process_2->nombre);
+    int result = strcmp(process_1->nombre, process_2->nombre);
     if (result > 0) {
       // Process 2 es mas chico
-      return process_2;
+      return 1;
     
     } else {
       // Process 1 es mas chico
-      return process_1;
+      return 0;
     }
   } else{
     if (process_1->id_fabrica < process_2->id_fabrica){
-      return process_1;
+      return 0;
     } else {
-      return process_2;
+      return 1;
     }
   }
 }
@@ -166,77 +167,28 @@ void destroy_queue_secciones(Queue_secciones* cola){
   free(cola);
 }
 
-// int quantum(int Q, int fabrica, Queue* queue){
-  
-  // int fabricas_1[]= {0,0,0,0};
-  //   int fabricas_2[]= {0,0,0,0};
+int quantum(int Q, int fabrica, Queue_secciones* cola_secciones){
 
-  //   for (int j=0;j<4;j++){
-  //     Process* actual = cola_secciones->seccion[j]->primer_proceso;
-  //     while (actual != NULL)
-  //     {
-  //       if (actual->id_fabrica == process_1->id_fabrica)
-  //       {
-  //         /* code */
-  //       }
-  //     }
-  //   }
+  Process* actual;
+  int ni = 0;
+  int fabricas[] = {0,0,0,0};
+  for (int i=0; i<4; i++){
+    actual = cola_secciones->seccion[i]->primer_proceso;
+    while (actual != NULL)
+    {
+      if (actual->id_fabrica == fabrica){
+        ni+=1;
+        fabricas[actual->id_fabrica-1] = 1;
+      } else {
+        fabricas[actual->id_fabrica-1] = 1;
+      }
+      actual = actual->siguiente;
+    }
+  }
 
+  int f = fabricas[0]+fabricas[1]+fabricas[2]+fabricas[3];
+  int q = Q/(ni*f);
+  return q;
+}
 
-//     Process* process;
-//     int ni = 0;
-//     int fabricas[] = {0,0,0,0};
-//     process = queue->primero;
-//     while (process != NULL){
-//         if (process->id_fabrica == fabrica){
-//             ni += 1;
-//             fabricas[fabrica-1] = 1;
-//         } else {
-//             fabricas[process->id_fabrica-1] = 1;
-//         }
-//         process = process->siguiente;
-//     }
-    
-//     int f = fabricas[0]+fabricas[1]+fabricas[2]+fabricas[3];
-//     int q = Q/(ni*f);
-//     return q;
-// }
-
-// // Armar función que cambie el estado del proceso
-// if (Ai == tiempo_que_lleva){
-//   //Cede la CPU
-//   process->estado = WAITING;
-// } else if (Termina la ejecucion){
-//   process->estado = FINISHED;
-// } else if (quantum_restante == 0){
-//   process->estado = READY;
-// } else {
-//   //Sigo en running
-// }
-
-// //FUNCION
-// switch (process->estado) //Switch te permite realizar diferentes acciones según el caso del estado
-// {
-// case RUNNING:
-//   printf("Estoy en estado RUNNING\n");
-//   break;
-
-// case READY:
-//   printf("Estoy en estado READY\n");
-//   printf("Lo mando al final de la cola\n");
-//   break;
-
-// case WAITING:
-//   printf("Estoy en estado WAITING\n");
-//   printf("Lo mando al final de la cola\n");
-//   break;
-
-// case FINISHED:
-//   printf("Estoy en estado FINISHED\n");
-//   break;
-
-// default:
-// printf("Esto no debería pasar\n");
-//   break;
-// }
 

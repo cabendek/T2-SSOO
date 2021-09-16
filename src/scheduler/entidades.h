@@ -37,7 +37,8 @@ typedef struct queue_secciones{
 
 Process* process_init(char* nombre, int fabrica, int tiempo_llegada, int* array_burst, int number_burst);
 Process* buscar_proceso_running(Queue_secciones* cola_secciones);
-Process* prioridad(Process* process_1, Process* process_2);
+int prioridad(Process* process_1, Process* process_2);
+int quantum(int Q, int fabrica, Queue_secciones* cola_secciones);
 Queue* queue_init();
 Queue_secciones* queue_secciones_init();
 
