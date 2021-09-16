@@ -16,8 +16,8 @@ Process* process_init(char* nombre, int fabrica, int tiempo_llegada, int number_
         .array_burst = calloc(number_burst*2-1, sizeof(int)),
         .number_burst = number_burst,
         .quantum = 0,
-        // .A = array_burst[0],
-        // .B = array_burst[1],
+        .A = 0,
+        .B = 0,
         .actual_burst = 0,
         .siguiente = NULL
   };
@@ -105,6 +105,7 @@ void inicializar_proceso(Process* proceso, Queue* cola_inicial, Queue_secciones*
   quitar_proceso(proceso, cola_inicial);
   insertar_proceso(proceso, cola_final);
   proceso->section = 3;
+  proceso->estado = READY;
   printf("[t = %i] El proceso %s ha pasado a estado READY.\n",time, proceso->nombre);
 }
 
@@ -114,7 +115,6 @@ void cambiar_seccion(Process* proceso, int seccion_inicial, int seccion_final, Q
   proceso->section = seccion_final;
   quitar_proceso(proceso, cola_inicial);
   insertar_proceso(proceso, cola_final);
-  printf("Seccion final %i.\n",seccion_final);
   if (seccion_final == 0){
     printf("[t = %i] El proceso %s ha pasado a estado RUNNING.\n",time, proceso->nombre);
   } else if (seccion_final == 1){
