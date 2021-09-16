@@ -1,7 +1,8 @@
 #include "entidades.h"
 
 int pid = 0;
-Process* process_init(char* nombre, int fabrica, int tiempo_llegada, int* array_burst){
+Process* process_init(char* nombre, int fabrica, int tiempo_llegada, int* array_burst, int number_burst){
+    
     Process* process = malloc(sizeof(Process));
     
     *process = (Process) {
@@ -12,10 +13,10 @@ Process* process_init(char* nombre, int fabrica, int tiempo_llegada, int* array_
         .tiempo_llegada = tiempo_llegada,
         .section = 0, //Seccion 0: no esta en nada; Seccion 1: "READY" desde "WAITING"; Seccion 2: "READY" desde "RUNNING"; Seccion 3: "READY" por 1era vez; Seccion 4: "WAITING"
         .array_burst = array_burst,
-        .number_burst = 0,
+        .number_burst = number_burst,
         .quantum = 0,
-        .A = 0,
-        .B = 0,
+        .A = array_burst[0],
+        .B = array_burst[1],
         .actual_burst = 0,
         .siguiente = NULL
   };
@@ -103,6 +104,7 @@ void inicializar_proceso(Process* proceso, Queue* cola_inicial, Queue_secciones*
 void cambiar_seccion(Process* proceso, int seccion_inicial, int seccion_final, Queue_secciones* cola_secciones){
   Queue* cola_inicial = cola_secciones->seccion[seccion_inicial - 1];
   Queue* cola_final = cola_secciones->seccion[seccion_final - 1];
+  proceso->section = seccion_final;
   quitar_proceso(proceso, cola_inicial);
   insertar_proceso(proceso, cola_final);
 }
@@ -126,7 +128,6 @@ void destroy_queue(Queue* cola){
   if (cola->primer_proceso != NULL){
     destroy_proceso(cola->primer_proceso);
   }
-  free(cola->primer_proceso);
   free(cola);
 }
 

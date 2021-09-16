@@ -35,7 +35,7 @@ typedef struct queue_secciones{
     Queue** seccion;
 } Queue_secciones;
 
-Process* process_init(char* nombre, int fabrica, int tiempo_llegada, int* array_burst);
+Process* process_init(char* nombre, int fabrica, int tiempo_llegada, int* array_burst, int number_burst);
 Queue* queue_init();
 Queue_secciones* queue_secciones_init();
 
