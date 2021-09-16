@@ -42,6 +42,7 @@ int main(int argc, char **argv)
         }
         char* nombre = line[0];
         Process* proceso = process_init(nombre, atoi(line[2]), atoi(line[1]), array_burst, atoi(line[3]));
+        printf("[Dentro For]ARRAY_BURST:%i, %i, %i, %i\n", proceso->array_burst[0], proceso->array_burst[1], proceso->array_burst[2], proceso->array_burst[3]);
         if (proceso->tiempo_llegada == 0){
           printf("[t = 0] El proceso %s ha sido creado y ha pasado a estado READY.\n", proceso->nombre);
           printf("A inicial = %i\n", proceso->A);
@@ -54,10 +55,11 @@ int main(int argc, char **argv)
   }
   // printf("Liberando memoria...\n");
   printf("Primer proceso: %s\n ", cola_seccion3->primer_proceso->nombre);
+  printf("[Fuera For]ARRAY_BURST:%i, %i, %i, %i\n", cola_seccion3->primer_proceso->array_burst[0], cola_seccion3->primer_proceso->array_burst[1], cola_seccion3->primer_proceso->array_burst[2], cola_seccion3->primer_proceso->array_burst[3]);
 
 
 
-  // Instanciar Plani <3
+ // Instanciar Plani <3
 
 int time = 0;
 // while (cola_final->largo != total_length){
@@ -81,8 +83,9 @@ for (int t = 0; t < 6; t++){
         // RUNNING -> WAITING
         running_process->estado = WAITING;
         running_process->actual_burst += 1;
-        //running_process->B = running_process->array_burst[running_process->actual_burst];
+        running_process->B = running_process->array_burst[running_process->actual_burst];
         printf("B: %i\n",running_process->B);
+        printf("ARRAY BURST %d\n",running_process->array_burst[0]);
         printf("Actual Burst: %i\n",running_process->actual_burst);
         cambiar_seccion(running_process, running_process->section, 4, cola_secciones, time);
         if (running_process->quantum == 0){
