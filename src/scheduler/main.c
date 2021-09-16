@@ -34,13 +34,16 @@ int main(int argc, char **argv)
     // printf(
     //     "\tProcess %s from factory %s has init time of %s and %s bursts.\n",
     //     line[0], line[2], line[1], line[3]);
-        int array_burst[atoi(line[3])];
-        for (int i=0; i< atoi(line[3]); i++){
-          array_burst[i]= atoi(line[3+i]);
+        int largo_array = atoi(line[3])*2-1;
+        int array_burst[largo_array];
+        for (int i=0; i< largo_array; i++){
+          array_burst[i]= atoi(line[4+i]);
+          printf("Array_burst[%i] = %i\n", i, array_burst[i]);
         }
         Process* proceso = process_init(line[0], atoi(line[2]), atoi(line[1]), array_burst, atoi(line[3]));
         if (proceso->tiempo_llegada == 0){
           printf("[t = 0] El proceso %s ha sido creado y ha pasado a estado READY.\n", proceso->nombre);
+          printf("A inicial = %i\n", proceso->A);
           insertar_proceso(proceso, cola_seccion3);
           proceso->section = 3;
         } else {
@@ -52,16 +55,16 @@ int main(int argc, char **argv)
   input_file_destroy(file);
 
   //printf("Primer proceso: %s\n ", cola_inicial->primer_proceso->nombre);
-  //printf("Segundo proceso: %s \n", cola_seccion3->primer_proceso->nombre);
 
 
   // Instanciar Plani <3
 
-  int time = 0;
-  while (cola_final->largo != total_length){
+int time = 0;
+// while (cola_final->largo != total_length){
+for (int t = 0; t < 5; t++){
     bool process_running = false;
-
     Process* running_process;
+
     for (int i=0; i<3;i++){
       if (cola_secciones->seccion[i]->largo > 0 ){
         if (cola_secciones->seccion[i]->primer_proceso->estado == RUNNING){ //Esto es pensando que solo el primer proceso puede estar en running
@@ -75,63 +78,66 @@ int main(int argc, char **argv)
     if (process_running){
 
       if (running_process->A == 0 && running_process->number_burst != (running_process->actual_burst+2)/2) {
-        // RUNNING -> WAITING
-        running_process->estado = WAITING;
-        running_process->actual_burst += 1;
-        running_process->B = running_process->array_burst[running_process->actual_burst];
-        printf("SECCION: %i\n",running_process->section);
-        cambiar_seccion(running_process, running_process->section, 4, cola_secciones, time);
-        if (running_process->quantum == 0){
-          //running_process.interrupciones += 1; ESTADISTICAS
-        }
-        // Buscar cual entra --------------- FUNCION -----------------
-        // READY -> RUNNING
-        Process* new_running = buscar_proceso_running(cola_secciones);
-        if (new_running != NULL){
-          int q = quantum(Q,new_running->id_fabrica,cola_secciones);
-          new_running->quantum = q;
-          new_running->A -= 1;
-          new_running->quantum -= 1;
-          printf("[t = %i] La CPU eligió el proceso %s.\n", time, new_running->nombre);
-        }
+  //       // RUNNING -> WAITING
+  //       running_process->estado = WAITING;
+  //       running_process->actual_burst += 1;
+  //       running_process->B = running_process->array_burst[running_process->actual_burst];
+  //       printf("SECCION: %i\n",running_process->section);
+  //       cambiar_seccion(running_process, running_process->section, 4, cola_secciones, time);
+  //       if (running_process->quantum == 0){
+  //         //running_process.interrupciones += 1; ESTADISTICAS
+  //       }
+  //       // Buscar cual entra --------------- FUNCION -----------------
+  //       // READY -> RUNNING
+  //       Process* new_running = buscar_proceso_running(cola_secciones);
+  //       if (new_running != NULL){
+  //         int q = quantum(Q,new_running->id_fabrica,cola_secciones);
+  //         new_running->quantum = q;
+  //         new_running->A -= 1;
+  //         new_running->quantum -= 1;
+  //         printf("[t = %i] La CPU eligió el proceso %s.\n", time, new_running->nombre);
+        // }
 
       } else if (running_process->A == 0 && running_process->number_burst == (running_process->actual_burst+2)/2){
-        // RUNNING -> FINISHED
-        running_process->estado = FINISHED;
-        finalizar_proceso(running_process, running_process->section, cola_final, cola_secciones, time);
-        // Buscar cual entra --------------- FUNCION -----------------
-        // READY -> RUNNING
-        Process* new_running = buscar_proceso_running(cola_secciones);
-        if (new_running != NULL){
-          printf("[t = %i] La CPU eligió el proceso %s.\n", time, new_running->nombre);
-          int q = quantum(Q,new_running->id_fabrica,cola_secciones);
-          new_running->quantum = q;
-          new_running->A -= 1;
-          new_running->quantum -= 1;
-        }
+  //       // RUNNING -> FINISHED
+  //       running_process->estado = FINISHED;
+  //       finalizar_proceso(running_process, running_process->section, cola_final, cola_secciones, time);
+  //       // Buscar cual entra --------------- FUNCION -----------------
+  //       // READY -> RUNNING
+  //       Process* new_running = buscar_proceso_running(cola_secciones);
+  //       if (new_running != NULL){
+  //         printf("[t = %i] La CPU eligió el proceso %s.\n", time, new_running->nombre);
+  //         int q = quantum(Q,new_running->id_fabrica,cola_secciones);
+  //         new_running->quantum = q;
+  //         new_running->A -= 1;
+  //         new_running->quantum -= 1;
+        // }
 
       } else if (running_process->quantum == 0){
-        // RUNNING -> READY
-        running_process->estado = READY;
-        cambiar_seccion(running_process,running_process->section, 2, cola_secciones, time);
-        //Buscar cual entra --------------- FUNCION -----------------
-        // READY -> RUNNING
-        Process* new_running = buscar_proceso_running(cola_secciones);
-        if (new_running != NULL){
-          printf("[t = %i] La CPU eligió el proceso %s.\n", time, new_running->nombre);
-          int q = quantum(Q,new_running->id_fabrica,cola_secciones);
-          new_running->quantum = q;
-          new_running->A -= 1;
-          new_running->quantum -= 1;
-        }
+  //       // RUNNING -> READY
+  //       running_process->estado = READY;
+  //       cambiar_seccion(running_process,running_process->section, 2, cola_secciones, time);
+  //       //Buscar cual entra --------------- FUNCION -----------------
+  //       // READY -> RUNNING
+  //       Process* new_running = buscar_proceso_running(cola_secciones);
+  //       if (new_running != NULL){
+  //         printf("[t = %i] La CPU eligió el proceso %s.\n", time, new_running->nombre);
+  //         int q = quantum(Q,new_running->id_fabrica,cola_secciones);
+  //         new_running->quantum = q;
+  //         new_running->A -= 1;
+  //         new_running->quantum -= 1;
+        // }
         
       } else {
-        // RUNNING -> RUNNING
+  //       // RUNNING -> RUNNING
         running_process->A -= 1;
         running_process->quantum -= 1;
+        printf("[t = %i] Proceso %s corriendo en la CPU.\n", time, running_process->pid);
+        printf("Me queda A = %i.\n", running_process->A);
+        printf("Me queda Quantum = %i.\n", running_process->quantum);
       }
     
-    // Si no hay procesos en estado RUNNING
+  //   // Si no hay procesos en estado RUNNING
     } else {
       // READY -> RUNNING
       bool ningun_proceso = true;
@@ -139,7 +145,7 @@ int main(int argc, char **argv)
         if (cola_secciones->seccion[i]->largo > 0 ){
           running_process = cola_secciones->seccion[i]->primer_proceso;
           running_process->estado = RUNNING;
-          printf("[t = %i] La CPU eligió el proceso %s.\n", time, running_process->nombre);
+          printf("[t = %i] La CPU eligió el proceso %i.\n", time, running_process->pid);
           int q = quantum(Q,running_process->id_fabrica,cola_secciones);
           running_process->quantum = q;
           running_process->A -= 1;
@@ -153,102 +159,67 @@ int main(int argc, char **argv)
       }
     }
 
-    // Descontar B de procesos waiting
-    Process* proceso_waiting = cola_seccion4->primer_proceso;
+  //   // Descontar B de procesos waiting
+  //   Process* proceso_waiting = cola_seccion4->primer_proceso;
 
-    while (proceso_waiting != NULL){
-      proceso_waiting->B -= 1;
+  //   while (proceso_waiting != NULL){
+  //     proceso_waiting->B -= 1;
 
-      if (proceso_waiting->B == 0){
-        // WAITING -> READY
-        cambiar_seccion(proceso_waiting, 4, 1, cola_secciones, time);
-        proceso_waiting->actual_burst += 1;
-        proceso_waiting->A = proceso_waiting->array_burst[proceso_waiting->actual_burst];
-      }
+  //     if (proceso_waiting->B == 0){
+  //       // WAITING -> READY
+  //       cambiar_seccion(proceso_waiting, 4, 1, cola_secciones, time);
+  //       proceso_waiting->actual_burst += 1;
+  //       proceso_waiting->A = proceso_waiting->array_burst[proceso_waiting->actual_burst];
+  //     }
       
-      proceso_waiting = proceso_waiting->siguiente;
-    }
+  //     proceso_waiting = proceso_waiting->siguiente;
+  //   }
     
 
-    // CHEQUEO LA COLA INICAL         INICIAL -> READY
-    if (cola_inicial->largo == 1){
-      if (cola_inicial->primer_proceso->tiempo_llegada == time){
-        insertar_proceso(cola_inicial->primer_proceso, cola_seccion3);
-      }
+  //   // CHEQUEO LA COLA INICAL         INICIAL -> READY
+  //   if (cola_inicial->largo == 1){
+  //     if (cola_inicial->primer_proceso->tiempo_llegada == time){
+  //       insertar_proceso(cola_inicial->primer_proceso, cola_seccion3);
+  //     }
     
-    } else {
-      Process* process_1 = NULL;
-      Process* process_2 = NULL;
-      Process* proceso_sin_iniciar = cola_inicial->primer_proceso;
+  //   } else {
+  //     Process* process_1 = NULL;
+  //     Process* process_2 = NULL;
+  //     Process* proceso_sin_iniciar = cola_inicial->primer_proceso;
 
-      while(proceso_sin_iniciar != NULL){
-        if (proceso_sin_iniciar->tiempo_llegada == time){
+  //     while(proceso_sin_iniciar != NULL){
+  //       if (proceso_sin_iniciar->tiempo_llegada == time){
           
-          if (process_1 == NULL){
-            process_1 = proceso_sin_iniciar;
+  //         if (process_1 == NULL){
+  //           process_1 = proceso_sin_iniciar;
 
-          } else if (process_2 == NULL){
-            process_2 = proceso_sin_iniciar;
+  //         } else if (process_2 == NULL){
+  //           process_2 = proceso_sin_iniciar;
 
-          } else {
-            printf("Esto no deberia pasar\n");
-          }
-        }
-        proceso_sin_iniciar = proceso_sin_iniciar->siguiente;
-      }
-      if (process_2 == NULL && process_1 != NULL){
-        inicializar_proceso(process_1, cola_inicial, cola_secciones, time);
-      } else if (process_2 != NULL && process_1 != NULL){
-        int ingreso = prioridad(process_1, process_2);
-        if (ingreso == 0){
-          inicializar_proceso(process_1, cola_inicial, cola_secciones, time);
-          inicializar_proceso(process_2, cola_inicial, cola_secciones, time);
-        } else{
-          inicializar_proceso(process_2, cola_inicial, cola_secciones, time);
-          inicializar_proceso(process_1, cola_inicial, cola_secciones, time);
-        }
-      } else {
-        // No se incorpora ningun proceso
-      }
-    }
+  //         } else {
+  //           printf("Esto no deberia pasar\n");
+  //         }
+  //       }
+  //       proceso_sin_iniciar = proceso_sin_iniciar->siguiente;
+  //     }
+  //     if (process_2 == NULL && process_1 != NULL){
+  //       inicializar_proceso(process_1, cola_inicial, cola_secciones, time);
+  //     } else if (process_2 != NULL && process_1 != NULL){
+  //       int ingreso = prioridad(process_1, process_2);
+  //       if (ingreso == 0){
+  //         inicializar_proceso(process_1, cola_inicial, cola_secciones, time);
+  //         inicializar_proceso(process_2, cola_inicial, cola_secciones, time);
+  //       } else{
+  //         inicializar_proceso(process_2, cola_inicial, cola_secciones, time);
+  //         inicializar_proceso(process_1, cola_inicial, cola_secciones, time);
+  //       }
+  //     } else {
+  //       // No se incorpora ningun proceso
+  //     }
+    // }
 
   time += 1;
   }
-  
-  // while (final_queue->length == total_length){
-  //   // Checkear si hay un proceso en running (si hay)
-  //     // 1. Se ejecuta la funcion CPU
-  //     
-      
-  //   // Si no hay proceso RUNNING
-  //     // 1. Buscar en lista estados, algun proceso "READY"
-  //     // Si hay un proceso "READY", 
-  //         //pasarlo a "RUNNING", ejecutar la funcion CPU
-  //         // llevar estadistica
-
-
-  //   // 2. Contadores (for de la lista estados) y estadistica
-  //     // --- "RUNNING"
-  //       // --- Checkear nuevos estados
-  //       // --- Si A o quantum = 0, hago blabla
-  //       // --- cachar si pasa a ready (seccion 2) o waiting o finished (no quede un B; igualdad rafagas)
-      
-  //     // --- "READY"
-  //       // nada
-      
-  //     // --- "WAITING"
-  //       // --- Se descuenta 1 a B y chequear nuevo estado 
-  //       // --- Si B es 0 pasa a "READY" Section 1
-
-
-  //   //
-  //   time += 1;
-  //   // Agregar desde fila_inical a fila_estado que cumplan ocn que tiempo_llegada = tiempo
-  // }
-
-  // Escribir el Output
-
-  // Liberar la memoria
   
   destroy_queue(cola_inicial);
   destroy_queue(cola_seccion1);
