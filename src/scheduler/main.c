@@ -40,7 +40,8 @@ int main(int argc, char **argv)
           array_burst[i]= atoi(line[4+i]);
           printf("Array_burst[%i] = %i\n", i, array_burst[i]);
         }
-        Process* proceso = process_init(line[0], atoi(line[2]), atoi(line[1]), array_burst, atoi(line[3]));
+        char* nombre = line[0];
+        Process* proceso = process_init(nombre, atoi(line[2]), atoi(line[1]), array_burst, atoi(line[3]));
         if (proceso->tiempo_llegada == 0){
           printf("[t = 0] El proceso %s ha sido creado y ha pasado a estado READY.\n", proceso->nombre);
           printf("A inicial = %i\n", proceso->A);
@@ -52,16 +53,15 @@ int main(int argc, char **argv)
         }
   }
   // printf("Liberando memoria...\n");
-  input_file_destroy(file);
+  printf("Primer proceso: %s\n ", cola_seccion3->primer_proceso->nombre);
 
-  //printf("Primer proceso: %s\n ", cola_inicial->primer_proceso->nombre);
 
 
   // Instanciar Plani <3
 
 int time = 0;
 // while (cola_final->largo != total_length){
-for (int t = 0; t < 5; t++){
+for (int t = 0; t < 6; t++){
     bool process_running = false;
     Process* running_process;
 
@@ -114,25 +114,27 @@ for (int t = 0; t < 5; t++){
         // }
 
       } else if (running_process->quantum == 0){
-  //       // RUNNING -> READY
-  //       running_process->estado = READY;
-  //       cambiar_seccion(running_process,running_process->section, 2, cola_secciones, time);
-  //       //Buscar cual entra --------------- FUNCION -----------------
-  //       // READY -> RUNNING
-  //       Process* new_running = buscar_proceso_running(cola_secciones);
-  //       if (new_running != NULL){
-  //         printf("[t = %i] La CPU eligió el proceso %s.\n", time, new_running->nombre);
-  //         int q = quantum(Q,new_running->id_fabrica,cola_secciones);
-  //         new_running->quantum = q;
-  //         new_running->A -= 1;
-  //         new_running->quantum -= 1;
+        printf("El proceso %s pasa a READY\n", running_process->nombre);
+        // RUNNING -> READY
+        running_process->estado = READY;
+        cambiar_seccion(running_process,running_process->section, 2, cola_secciones, time);
+        // //Buscar cual entra --------------- FUNCION -----------------
+        // // READY -> RUNNING
+        // Process* new_running = buscar_proceso_running(cola_secciones);
+        // printf("El proceso %s pasa a WAITING\n", running_process->nombre);
+        // if (new_running != NULL){
+        //   printf("[t = %i] La CPU eligió el proceso %i.\n", time, new_running->pid);
+        //   int q = quantum(Q,new_running->id_fabrica,cola_secciones);
+        //   new_running->quantum = q;
+        //   new_running->A -= 1;
+        //   new_running->quantum -= 1;
         // }
         
       } else {
   //       // RUNNING -> RUNNING
         running_process->A -= 1;
         running_process->quantum -= 1;
-        printf("[t = %i] Proceso %s corriendo en la CPU.\n", time, running_process->pid);
+        printf("[t = %i] Proceso %s corriendo en la CPU.\n", time, running_process->nombre);
         printf("Me queda A = %i.\n", running_process->A);
         printf("Me queda Quantum = %i.\n", running_process->quantum);
       }
@@ -145,12 +147,14 @@ for (int t = 0; t < 5; t++){
         if (cola_secciones->seccion[i]->largo > 0 ){
           running_process = cola_secciones->seccion[i]->primer_proceso;
           running_process->estado = RUNNING;
-          printf("[t = %i] La CPU eligió el proceso %i.\n", time, running_process->pid);
-          int q = quantum(Q,running_process->id_fabrica,cola_secciones);
+          printf("[t = %i] La CPU eligió el proceso %s y lo ejecutó 1 segundo.\n", time, running_process->nombre);
+          int q = quantum(Q, running_process->id_fabrica,cola_secciones);
           running_process->quantum = q;
           running_process->A -= 1;
           running_process->quantum -= 1;
           ningun_proceso = false;
+          printf("Me queda A = %i.\n", running_process->A);
+          printf("Me queda Quantum = %i.\n", running_process->quantum);
           break;
         }
       }
@@ -220,7 +224,7 @@ for (int t = 0; t < 5; t++){
 
   time += 1;
   }
-  
+  input_file_destroy(file);
   destroy_queue(cola_inicial);
   destroy_queue(cola_seccion1);
   destroy_queue(cola_seccion2);

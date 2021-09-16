@@ -114,7 +114,19 @@ void cambiar_seccion(Process* proceso, int seccion_inicial, int seccion_final, Q
   proceso->section = seccion_final;
   quitar_proceso(proceso, cola_inicial);
   insertar_proceso(proceso, cola_final);
-  printf("[t = %i] El proceso %s ha pasado a estado %i.\n",time, proceso->nombre, seccion_final);
+  printf("Seccion final %i.\n",seccion_final);
+  if (seccion_final == 0){
+    printf("[t = %i] El proceso %s ha pasado a estado RUNNING.\n",time, proceso->nombre);
+  } else if (seccion_final == 1){
+    printf("[t = %i] El proceso %s ha pasado a estado READY.\n",time, proceso->nombre);
+  } else if (seccion_final == 2){
+    printf("[t = %i] El proceso %s ha pasado a estado READY.\n",time, proceso->nombre);
+  } else if (seccion_final == 3){
+    printf("[t = %i] El proceso %s ha pasado a estado READY.\n",time, proceso->nombre);
+  } else if (seccion_final == 4){
+    printf("[t = %i] El proceso %s ha pasado a estado WAITING.\n",time, proceso->nombre);
+  }
+  
 }
 
 void finalizar_proceso(Process* proceso, int seccion_inicial, Queue* cola_final, Queue_secciones* cola_secciones, int time){
@@ -158,7 +170,6 @@ void destroy_proceso(Process* proceso){
   if (proceso->siguiente != NULL){
     destroy_proceso(proceso->siguiente);
   } else{
-    // free(proceso->array_burst);
     free(proceso);
   }
 }
@@ -196,7 +207,7 @@ int quantum(int Q, int fabrica, Queue_secciones* cola_secciones){
 
   int f = fabricas[0]+fabricas[1]+fabricas[2]+fabricas[3];
   int q = Q/(ni*f);
-  return q;
+  return 4;
 }
-
+//////////MODIFICAR EL 4 A q!!!!!! 
 
