@@ -69,6 +69,7 @@ void quitar_proceso(Process* proceso, Queue* cola){
   if (cola->primer_proceso == proceso){
     Process* proceso_siguiente = cola->primer_proceso->siguiente;
     cola->primer_proceso = proceso_siguiente;
+    proceso->siguiente = NULL;
     cola->largo -= 1;
 
   } else if (cola->ultimo_proceso == proceso){
@@ -80,6 +81,7 @@ void quitar_proceso(Process* proceso, Queue* cola){
     }
     proceso_iterado->siguiente = NULL;
     cola->ultimo_proceso = proceso_iterado;
+    proceso->siguiente = NULL;
     cola->largo -= 1;
 
   } else {
@@ -91,6 +93,7 @@ void quitar_proceso(Process* proceso, Queue* cola){
     }
     Process* siguiente = proceso_iterado->siguiente->siguiente;
     proceso_iterado->siguiente = siguiente;
+    proceso->siguiente = NULL;
     cola->largo -= 1;
   }
   if (cola->largo == 0){
@@ -169,10 +172,10 @@ int prioridad(Process* process_1, Process* process_2){
 void destroy_proceso(Process* proceso){
   if (proceso->siguiente != NULL){
     destroy_proceso(proceso->siguiente);
-  } else{
-    free(proceso->array_burst);
-    free(proceso);
-  }
+  } 
+  free(proceso->array_burst);
+  free(proceso);
+  
 }
 
 void destroy_queue(Queue* cola){
@@ -188,7 +191,6 @@ void destroy_queue_secciones(Queue_secciones* cola){
 }
 
 int quantum(int Q, int fabrica, Queue_secciones* cola_secciones){
-
   Process* actual;
   int ni = 0;
   int fabricas[] = {0,0,0,0};
@@ -208,7 +210,7 @@ int quantum(int Q, int fabrica, Queue_secciones* cola_secciones){
 
   int f = fabricas[0]+fabricas[1]+fabricas[2]+fabricas[3];
   int q = Q/(ni*f);
-  return 4;
+  return q;
 }
 //////////MODIFICAR EL 4 A q!!!!!! 
 
