@@ -214,7 +214,7 @@ int quantum(int Q, int fabrica, Queue_secciones* cola_secciones){
 
   int f = fabricas[0]+fabricas[1]+fabricas[2]+fabricas[3];
   int q = Q/(ni*f);
-  return 4;
+  return q;
 }
 //////////MODIFICAR EL 4 A q!!!!!! 
 
