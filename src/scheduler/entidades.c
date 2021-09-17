@@ -23,7 +23,8 @@ Process* process_init(char* nombre, int fabrica, int tiempo_llegada, int number_
         .cantidad_elecciones_CPU = 0,
         .cantidad_interrupciones = 0,
         .tiempo_finalizacion = tiempo_llegada,
-        .tiempo_primera_atencion = -1
+        .tiempo_primera_atencion = -1,
+        .waiting = 0
   };
   pid += 1;
   return process;

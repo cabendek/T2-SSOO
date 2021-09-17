@@ -27,6 +27,7 @@ typedef struct proceso{
     int cantidad_interrupciones;
     int tiempo_finalizacion;
     int tiempo_primera_atencion;
+    int waiting;
 } Process;
 
 typedef struct queue{

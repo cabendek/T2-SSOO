@@ -16,10 +16,10 @@
 //    cantidad interrupciones (listo)
 //    turnaround time (listo)
 //    response time (listo)
-//    waiting time (FALTA)
-// 2) Usando las estadisticas, generar el output_file (Y LIBERARLO)
+//    waiting time (FALTA Checkear)
+// 2) Usando las estadisticas, generar el output_file (Y LIBERARLO) (LISTO)
 // 3) Recibir un Q diferente de 0
-// 4) CAMBIAR EL de 4 a q EN EL RETURN DE LA FUNCION QUANTUM
+// 4) CAMBIAR EL de 4 a q EN EL RETURN DE LA FUNCION QUANTUM (LISTO)
 
 int main(int argc, char **argv)
 {
@@ -27,7 +27,13 @@ int main(int argc, char **argv)
   printf("Hello T2!\n");
 
   // inicializamos las variables leyendo el archivo
-  InputFile *file = read_file("input.txt");
+  InputFile *file = read_file(argv[1]);
+  FILE *output_file = fopen(argv[2], "w");
+  if (argv[3] == NULL){
+    printf("NO HAY VALOR DE Q\n");
+  } else {
+    Q = atoi(argv[3]);
+  }
   Queue* cola_inicial = queue_init();
   Queue* cola_seccion1 = queue_init();
   Queue* cola_seccion2 = queue_init();
@@ -85,9 +91,11 @@ while (cola_final->largo != total_length){
         running_process->estado = WAITING;
         running_process->actual_burst += 1;
         running_process->B = running_process->array_burst[running_process->actual_burst]+1;
+        running_process->waiting += 1;
 
         cambiar_seccion(running_process, running_process->section, 4, cola_secciones, time);
         if (running_process->quantum == 0){
+          printf("//// ENTRE AQUI ////\n");
           running_process->cantidad_interrupciones += 1;
         }
   //       // Buscar cual entra --------------- FUNCION ----------------- (con mas de un proceso)
@@ -111,6 +119,9 @@ while (cola_final->largo != total_length){
         running_process->estado = FINISHED;
         running_process->tiempo_finalizacion = time;
         finalizar_proceso(running_process, running_process->section, cola_final, cola_secciones, time);
+        if (running_process->quantum == 0){
+          running_process->cantidad_interrupciones += 1;
+        }
         // Buscar cual entra --------------- FUNCION -----------------
         // READY -> RUNNING
         Process* new_running = buscar_proceso_running(cola_secciones);
@@ -129,8 +140,10 @@ while (cola_final->largo != total_length){
       } else if (running_process->quantum == 0){
         // RUNNING -> READY
         running_process->estado = READY;
+        printf("//// ENTRE AQUI ////\n");
         running_process->cantidad_interrupciones += 1;
         cambiar_seccion(running_process,running_process->section, 2, cola_secciones, time);
+        running_process->waiting += 1;
         //Buscar cual entra --------------- FUNCION -----------------
         // READY -> RUNNING
         Process* new_running = buscar_proceso_running(cola_secciones);
@@ -177,6 +190,14 @@ while (cola_final->largo != total_length){
       }
       if (ningun_proceso){
         printf("[t = %i] No hay ningun proceso ejecutando en la CPU.\n",time);
+        for (int i=0; i<3;i++){
+          Process* actual = cola_secciones->seccion[i]->primer_proceso;
+          while (actual != NULL)
+          {
+            actual->waiting += 1;
+            actual = actual->siguiente;
+          }
+        }
       }
     }
 
@@ -184,6 +205,7 @@ while (cola_final->largo != total_length){
     Process* proceso_waiting = cola_seccion4->primer_proceso;
     while (proceso_waiting != NULL){
       proceso_waiting->B -= 1;
+      proceso_waiting->waiting += 1;
       if (proceso_waiting->B == 0){
         // WAITING -> READY
         cambiar_seccion(proceso_waiting, 4, 1, cola_secciones, time);
@@ -254,20 +276,21 @@ while (cola_final->largo != total_length){
       }
     }
   }
-
   // crear output
+  //Ordenarlo antes de...
   Process* proceso = cola_final->primer_proceso;
   while(proceso != NULL){
     int turnaround_time = proceso->tiempo_finalizacion - proceso->tiempo_llegada;
     int response_time = proceso->tiempo_primera_atencion - proceso->tiempo_llegada;
-    printf("\n");
-    printf("Nombre                      = %s\n", proceso->nombre);
-    printf("Cantidad elecciones por CPU = %i\n", proceso->cantidad_elecciones_CPU);
-    printf("Cantidad de interrupciones  = %i\n", proceso->cantidad_interrupciones);
-    printf("Turnaround time             = %i\n", turnaround_time);
-    printf("Response time               = %i\n", response_time);
+    //printf("\n");
+    fprintf(output_file,"%s,", proceso->nombre);
+    fprintf(output_file,"%i,", proceso->cantidad_elecciones_CPU);
+    fprintf(output_file,"%i,", proceso->cantidad_interrupciones);
+    fprintf(output_file,"%i,", turnaround_time);
+    fprintf(output_file,"%i,", response_time);
+    fprintf(output_file,"%i\n", proceso->waiting);
     // output
-    printf("%s,%i,%i,%i,%i\n",proceso->nombre, proceso->cantidad_elecciones_CPU, proceso->cantidad_interrupciones, turnaround_time, response_time);
+    printf("%s,%i,%i,%i,%i,%i\n",proceso->nombre, proceso->cantidad_elecciones_CPU, proceso->cantidad_interrupciones, turnaround_time, response_time, proceso->waiting);
     proceso = proceso->siguiente;
   }
 
@@ -279,5 +302,5 @@ while (cola_final->largo != total_length){
   destroy_queue(cola_final);
   destroy_queue_secciones(cola_secciones);
   input_file_destroy(file);
-  // liberar archivo de output
+  fclose(output_file);
 }
