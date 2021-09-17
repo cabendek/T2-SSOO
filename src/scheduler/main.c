@@ -278,20 +278,22 @@ while (cola_final->largo != total_length){
   }
   // crear output
   //Ordenarlo antes de...
-  Process* proceso = cola_final->primer_proceso;
-  while(proceso != NULL){
-    int turnaround_time = proceso->tiempo_finalizacion - proceso->tiempo_llegada;
-    int response_time = proceso->tiempo_primera_atencion - proceso->tiempo_llegada;
-    //printf("\n");
-    fprintf(output_file,"%s,", proceso->nombre);
-    fprintf(output_file,"%i,", proceso->cantidad_elecciones_CPU);
-    fprintf(output_file,"%i,", proceso->cantidad_interrupciones);
-    fprintf(output_file,"%i,", turnaround_time);
-    fprintf(output_file,"%i,", response_time);
-    fprintf(output_file,"%i\n", proceso->waiting);
-    // output
-    printf("%s,%i,%i,%i,%i,%i\n",proceso->nombre, proceso->cantidad_elecciones_CPU, proceso->cantidad_interrupciones, turnaround_time, response_time, proceso->waiting);
-    proceso = proceso->siguiente;
+  for (int i=0;i<total_length;i++){
+    Process* proceso = cola_final->primer_proceso;
+    while (proceso != NULL){
+      if (proceso->pid == i){
+        int turnaround_time = proceso->tiempo_finalizacion - proceso->tiempo_llegada;
+        int response_time = proceso->tiempo_primera_atencion - proceso->tiempo_llegada;
+        fprintf(output_file,"%s,", proceso->nombre);
+        fprintf(output_file,"%i,", proceso->cantidad_elecciones_CPU);
+        fprintf(output_file,"%i,", proceso->cantidad_interrupciones);
+        fprintf(output_file,"%i,", turnaround_time);
+        fprintf(output_file,"%i,", response_time);
+        fprintf(output_file,"%i\n", proceso->waiting);
+        break;
+      }
+      proceso = proceso->siguiente;
+    }
   }
 
   destroy_queue(cola_inicial);
