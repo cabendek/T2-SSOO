@@ -91,7 +91,6 @@ while (cola_final->largo != total_length){
         running_process->estado = WAITING;
         running_process->actual_burst += 1;
         running_process->B = running_process->array_burst[running_process->actual_burst]+1;
-        running_process->waiting += 1;
 
         cambiar_seccion(running_process, running_process->section, 4, cola_secciones, time);
         if (running_process->quantum == 0){
@@ -143,7 +142,6 @@ while (cola_final->largo != total_length){
         printf("//// ENTRE AQUI ////\n");
         running_process->cantidad_interrupciones += 1;
         cambiar_seccion(running_process,running_process->section, 2, cola_secciones, time);
-        running_process->waiting += 1;
         //Buscar cual entra --------------- FUNCION -----------------
         // READY -> RUNNING
         Process* new_running = buscar_proceso_running(cola_secciones);
@@ -190,14 +188,6 @@ while (cola_final->largo != total_length){
       }
       if (ningun_proceso){
         printf("[t = %i] No hay ningun proceso ejecutando en la CPU.\n",time);
-        for (int i=0; i<3;i++){
-          Process* actual = cola_secciones->seccion[i]->primer_proceso;
-          while (actual != NULL)
-          {
-            actual->waiting += 1;
-            actual = actual->siguiente;
-          }
-        }
       }
     }
 
@@ -230,6 +220,16 @@ while (cola_final->largo != total_length){
       }
       
       proceso_waiting = proceso_waiting->siguiente;
+    }
+
+    for (int i=0; i<3;i++){
+      Process* actual = cola_secciones->seccion[i]->primer_proceso;
+      while (actual != NULL) {
+        if (actual->estado == READY){
+          actual->waiting += 1;
+        }
+        actual = actual->siguiente;
+      }
     }
     
     time += 1;
