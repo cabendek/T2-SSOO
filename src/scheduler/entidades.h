@@ -23,6 +23,10 @@ typedef struct proceso{
     int B;
     int actual_burst;
     struct proceso* siguiente;
+    int cantidad_elecciones_CPU;
+    int cantidad_interrupciones;
+    int tiempo_finalizacion;
+    int tiempo_primera_atencion;
 } Process;
 
 typedef struct queue{

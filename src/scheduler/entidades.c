@@ -19,7 +19,11 @@ Process* process_init(char* nombre, int fabrica, int tiempo_llegada, int number_
         .A = 0,
         .B = 0,
         .actual_burst = 0,
-        .siguiente = NULL
+        .siguiente = NULL,
+        .cantidad_elecciones_CPU = 0,
+        .cantidad_interrupciones = 0,
+        .tiempo_finalizacion = tiempo_llegada,
+        .tiempo_primera_atencion = -1
   };
   pid += 1;
   return process;
@@ -210,7 +214,7 @@ int quantum(int Q, int fabrica, Queue_secciones* cola_secciones){
 
   int f = fabricas[0]+fabricas[1]+fabricas[2]+fabricas[3];
   int q = Q/(ni*f);
-  return q;
+  return 4;
 }
 //////////MODIFICAR EL 4 A q!!!!!! 
 
